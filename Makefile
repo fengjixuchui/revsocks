@@ -1,4 +1,4 @@
-VERSION=1.1.0
+VERSION=2.0
 
 revsocks: dep
 	go build
@@ -8,8 +8,9 @@ dep:
 	go get
 
 tools:
-	go get github.com/mitchellh/gox
-	get github.com/tcnksm/ghr
+	go install github.com/mitchellh/gox@latest
+	go install github.com/tcnksm/ghr@latest
+
 
 ver:
 	echo version $(VERSION)
@@ -25,7 +26,7 @@ dist:
 	mkdir -p dist
 
 gox:
-	CGO_ENABLED=0 gox -ldflags="-s -w" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
+	CGO_ENABLED=0 gox -osarch="!darwin/386" -ldflags="-s -w" -output="dist/{{.Dir}}_{{.OS}}_{{.Arch}}"
 
 draft:
 	ghr -draft v$(VERSION) dist/

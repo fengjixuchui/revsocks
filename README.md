@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/kost/revsocks.png)](https://travis-ci.org/kost/revsocks)
 [![CircleCI](https://circleci.com/gh/kost/revsocks.svg?style=svg)](https://circleci.com/gh/kost/revsocks)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3c687bcd445e4a828c914e4e2384196e)](https://www.codacy.com/manual/kost/revsocks?utm_source=github.com&utm_medium=referral&utm_content=kost/revsocks&utm_campaign=Badge_Grade)
 
@@ -22,13 +21,24 @@ Based on <https://github.com/brimstone/rsocks> and <https://github.com/llkat/rso
 
 ## Usage
 
+### reverse TCP
+
     Usage:
     1) Start on VPS: revsocks -listen :8443 -socks 127.0.0.1:1080 -pass SuperSecretPassword
     2) Start on client: revsocks -connect clientIP:8443 -pass SuperSecretPassword
     3) Connect to 127.0.0.1:1080 on the VPS with any socks5 client.
     4) Enjoy. :]
 
-## Optional parameters
+### DNS tunel
+
+```sh
+0) setup your domain records
+1) Start on the DNS server: revsocks -dns example.com -dnslisten :53 -socks 127.0.0.1:1080 -pass 52fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c64
+2) Start on the target: revsocks -dns example.com -pass 52fdfc072182654f163f5f0f9a621d729566c74d10037c4d7bbb0407d1e2c64
+3) Connect to 127.0.0.1:1080 on the DNS server with any socks5 client.
+```
+
+## Useful parameters
 
     Add params:
      -proxy 1.2.3.4:3128 - connect via proxy
@@ -39,6 +49,46 @@ Based on <https://github.com/brimstone/rsocks> and <https://github.com/llkat/rso
      -recn - reconnect times number. Default is 3. If 0 - infinite reconnection
      -rect - time delay in secs between reconnection attempts. Default is 30
 
+## Options
+
+Complete list of command line options
+
+```
+  -cert string
+	certificate file
+  -connect string
+	connect address:port
+  -debug
+	display debug info
+  -dns string
+	DNS domain to use for DNS tunneling
+  -dnsdelay string
+	Delay/sleep time between requests (200ms by default)
+  -dnslisten string
+	Where should DNS server listen
+  -listen string
+	listen port for receiver address:port
+  -pass string
+	Connect password
+  -proxy string
+	proxy address:port
+  -proxyauth string
+	proxy auth Domain/user:Password
+  -proxytimeout string
+	proxy response timeout (ms)
+  -q	Be quiet
+  -recn int
+	reconnection limit (default 3)
+  -rect int
+	reconnection delay (default 30)
+  -socks string
+	socks address:port (default "127.0.0.1:1080")
+  -useragent string
+	User-Agent
+  -version
+	version information
+```
+
 # Requirements
 
 -   Go 1.4 or higher
@@ -48,14 +98,10 @@ Based on <https://github.com/brimstone/rsocks> and <https://github.com/llkat/rso
 
 Linux VPS
 
--   install Golang: apt install golang
+-   install Golang: apt install golang make
 
 ```sh
-export GOPATH=~/go
-go get github.com/hashicorp/yamux
-go get github.com/armon/go-socks5
-go get github.com/kost/go-ntlmssp
-go build
+make
 ```
 
 launch:
@@ -69,9 +115,7 @@ Windows client:
 -   download and install golang
 
 ```sh
-go get github.com/hashicorp/yamux
-go get github.com/armon/go-socks5
-go get github.com/kost/go-ntlmssp
+go get
 go build
 ```
 
@@ -109,4 +153,11 @@ Generate self-signed certificate with openssl:
 
 ```sh
 openssl req -new -x509 -keyout server.key -out server.crt -days 365 -nodes
+```
+
+## Debug
+
+For debugging (especially DNS part):
+```sh
+go build -tags debug
 ```
